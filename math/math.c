@@ -20,3 +20,11 @@ eratos(int *arr,int size,int n)
       arr[j]=1;
   }
 }
+
+primeFactorCountOfFactorial(n,i)
+{
+  int result=0,j;
+  for(j=i;j<=n;j*=i)result+=n/j;
+  return result;
+}
+main(){}

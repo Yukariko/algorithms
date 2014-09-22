@@ -26,6 +26,7 @@ kruskal(Edge *edge, int n, int m)
   qsort(edge,m,sizeof(Edge),cmp);
   jump=malloc(sizeof(int)*(n+1));
   r=malloc(sizeof(int)*(n+1));
+  memset(r,0,sizeof(int)*(n+1));
   
   for(i=1;i<=n;i++)jump[i]=i;
   

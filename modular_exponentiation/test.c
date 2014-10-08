@@ -1,5 +1,5 @@
 //a^b mod c
-unsigned long long mod_exp(unsigned long long a,unsigned long long b,unsigned long long c)
+long long mod_exp(long long a,long long b,long long c)
 {
   a%=c;
   if(b==0)return 1;

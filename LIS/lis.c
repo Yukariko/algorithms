@@ -12,8 +12,8 @@ binary_search(int *arr,int *orgn,int size,int num)
 }
 LIS(int *arr,int size,int *lis)
 {
-  int *b=(int *)malloc(size*4);
-  int *parent = (int *)malloc(size*4);
+  int b[size];
+  int parent[size];
   memset(parent,-1,size*4);
   int i,j,k=0;
   for(i=0;i<size;i++)
@@ -36,8 +36,6 @@ LIS(int *arr,int size,int *lis)
   	lis[i]=arr[child];
   	child=parent[child];
   }
-  free(b);
-  free(parent);
   return k;
 }
 main(){}

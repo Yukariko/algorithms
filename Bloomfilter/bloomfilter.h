@@ -6,11 +6,11 @@ typedef long long bfData;
 typedef struct {
 	char *arr;
 	int size;
-	int numHashFunc;
-	long long (**hashFunc)(bfData);
+	int numHash;
+	long long (**hash)(bfData);
 } Bloom;
 
-Bloom *bloom_create(int size, int numHashFunc, long long (**hashFunc)(bfData));
+Bloom *bloom_create(int size, int numHash, long long (**hash)(bfData));
 int bloom_insert(Bloom *bf,bfData data);
 int bloom_lookup(Bloom *bf,bfData data);
 int bloom_destroy(Bloom *bf);

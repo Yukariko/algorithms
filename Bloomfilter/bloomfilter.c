@@ -5,35 +5,33 @@
 #define SETBIT(a,n) (a[n>>3] |= (1 << (n&7)))
 #define GETBIT(a,n) (a[n>>3] & (1 << (n&7)))
 
-Bloom *bloom_create(int size, int numHashFunc, long long (**hashFunc)(bfData))
+Bloom *bloom_create(int size, int numHash, long long (**hash)(bfData))
 {
 	Bloom *newBF = malloc(sizeof(Bloom));
 	newBF->size = size;
 	newBF->arr = malloc(size / 8 + 1);
 	memset(newBF->arr,0,size/8 + 1);
-	newBF->numHashFunc = numHashFunc;
-	newBF->hashFunc = hashFunc;
+	newBF->numHash = numHash;
+	newBF->hash = hash;
 	
 	return newBF;
 }
 int bloom_insert(Bloom *bf,bfData data)
 {
 	int i;
-	for(i=0;i<bf->numHashFunc;i++)
+	for(i=0;i<bf->numHash;i++)
 	{
-		const long long res = bf->hashFunc[i](data) % bf->size;
-		printf("%lld ",res);
+		const long long res = bf->hash[i](data) % bf->size;
 		SETBIT(bf->arr,res);
 	}
-	puts("");
 	return 1;
 }
 int bloom_lookup(Bloom *bf,bfData data)
 {
 	int i;
-	for(i=0;i<bf->numHashFunc;i++)
+	for(i=0;i<bf->numHash;i++)
 	{
-		const long long res = bf->hashFunc[i](data) % bf->size;
+		const long long res = bf->hash[i](data) % bf->size;
 		if(!GETBIT(bf->arr,res)) return 0;
 	}
 	return 1;

@@ -2,8 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MAX(p,q) (p>q?p:q)
-
+typedef struct Node {
+	int sum, cnt;
+}	Node;
 typedef long long rData;
 typedef struct Rectangle {
 	rData x1,y1;
@@ -17,11 +18,6 @@ typedef struct line {
 } Line;
 
 int rcmp(const void *p, const void *q)
-{
-	return *(rData *)p>*(rData *)q? 1: *(rData *)p<*(rData *)q? -1: 0;
-}
-
-int lcmp(const void *p, const void *q)
 {
 	return *(rData *)p>*(rData *)q? 1: *(rData *)p<*(rData *)q? -1: 0;
 }
@@ -50,10 +46,32 @@ void l_push(Line *l, rData x, rData y1, rData y2, int type)
 	l->type = type;
 }
 
+Node *BT;
+rData *y;
+
+void rSet(int pos, int goalLeft,int goalRight, int left, int right, int type)
+{
+	if(right < goalLeft || goalRight < left)
+		return;
+	if(goalLeft <= left && right <= goalRight)
+		BT[pos].cnt += type;
+	else
+	{
+		int mid = (left + right) / 2;
+		rSet(pos * 2, goalLeft, goalRight, left, mid, type);
+		rSet(pos * 2 + 1, goalLeft, goalRight, mid+1, right, type);
+	}
+
+	if(BT[pos].cnt == 0)
+		BT[pos].sum = BT[pos*2].sum + BT[pos*2+1].sum;
+	else
+		BT[pos].sum = y[right+1] - y[left];
+}
+
 rData plane_sweeping(Rectangle *rec, int len)
 {
 	Line l[2*len];
-	rData y[2*len];
+	y = (rData *)malloc(sizeof(rData) * (len * 2));
 	for(int i=0;i<len;i++)
 	{
 		l_push(&l[i*2], rec[i].x1, rec[i].y1, rec[i].y2, 1);
@@ -63,12 +81,16 @@ rData plane_sweeping(Rectangle *rec, int len)
 	}
 
 	int N = len * 2;
-	qsort(l,N,sizeof(Line),lcmp);
+	qsort(l,N,sizeof(Line),rcmp);
 	qsort(y,N,sizeof(rData),rcmp);
 
-	int ck[N];
-	memset(ck,0,sizeof(ck));
-	
+	int sz = 1;
+	while(sz < N)
+		sz *= 2;
+
+	BT = (Node *)malloc(sizeof(Node) * sz * 4);
+	memset(BT,0,sizeof(Node) * sz * 4);
+
 	rData ret = 0;
 	int t = l[0].x;
 	for(int i=0;i<N;i++)
@@ -76,13 +98,9 @@ rData plane_sweeping(Rectangle *rec, int len)
 		int ly = binsearch(y, N, l[i].y1);
 		int ry = binsearch(y, N, l[i].y2);
 
-		for(int j=1; j < N; j++)
-			if(ck[j])
-				ret += (l[i].x - t) * (y[j] - y[j-1]);
-
-		for(int j=ly+1; j <= ry; j++)
-			ck[j] += l[i].type;
-
+		ret += (l[i].x - t) * BT[1].sum;
+		rSet(1, ly, ry-1, 0, N-2, l[i].type);
+		
 		t = l[i].x;
 	}
 	return ret;
@@ -90,5 +108,13 @@ rData plane_sweeping(Rectangle *rec, int len)
 
 int main()
 {
+	Rectangle rec[10001];
+	int N;
+	scanf("%d",&N);
+
+	for(int i=0;i<N;i++)
+		scanf("%lld%lld%lld%lld",&rec[i].x1,&rec[i].y1,&rec[i].x2,&rec[i].y2);
+
+	printf("%lld\n",plane_sweeping(rec,N));
 	return 0;
 }

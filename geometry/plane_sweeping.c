@@ -2,10 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-typedef struct Node {
-	int sum, cnt;
-}	Node;
 typedef long long rData;
+
+typedef struct Node {
+	rData sum, cnt;
+}	Node;
+
 typedef struct Rectangle {
 	rData x1,y1;
 	rData x2,y2;
@@ -92,7 +94,7 @@ rData plane_sweeping(Rectangle *rec, int len)
 	memset(BT,0,sizeof(Node) * sz * 4);
 
 	rData ret = 0;
-	int t = l[0].x;
+	rData t = l[0].x;
 	for(int i=0;i<N;i++)
 	{
 		int ly = binsearch(y, N, l[i].y1);

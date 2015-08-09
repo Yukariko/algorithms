@@ -1,42 +1,46 @@
 #include <iostream>
+#include <vector>
+
+using namespace std;
 
 struct matrix
 {
-	long long a,b,c,d;
+	int N, M;
+	vector< vector<long long> > a;
 	static const long long MOD = 1000000;
 
-	matrix() : a(0), b(0), c(0), d(0) {}
-	matrix(long long a, long long b, long long c, long long d) : a(a), b(b), c(c), d(d) {}
-	matrix(const matrix &mat) : a(mat.a), b(mat.b), c(mat.c), d(mat.d) {}
+	matrix() : N(2), M(2), a(vector< vector<long long> >(N, vector<long long>(M, 0))) {}
+	matrix(int N, int M) : N(N), M(M), a(vector< vector<long long> >(N, vector<long long>(M, 0)))	{}
+	matrix(const vector< vector<long long> > &a) : a(a), N(a.size()), M(a[0].size()) {}
+	matrix(const matrix &mat) : N(mat.N), M(mat.M), a(mat.a) {}
 
 	matrix operator% (long long m) const
 	{
-		matrix ans(a,b,c,d);
-		ans.a %= m;
-		ans.b %= m;
-		ans.c %= m;
-		ans.d %= m;
+		matrix ans(a);
+		for(int i=0; i < a.size(); i++)
+			for(int j=0; j < a[i].size(); j++)
+				ans.a[i][j] %= m;
 		return ans;
 	}
 
 	matrix operator* (const matrix &q) const
 	{
-		matrix ans;
-		ans.a = a * q.a + b * q.c;
-		ans.b = a * q.b + b * q.d;
-		ans.c = c * q.a + d * q.c;
-		ans.d = c * q.b + d * q.d;
+		matrix ans(N, q.M);
+		for(int i=0; i < N; i++)
+		{
+			for(int j=0; j < q.M; j++)
+			{
+				ans.a[i][j] = 0;
+				for(int p=0; p < M; p++)
+					ans.a[i][j] += a[i][p] * q.a[p][j];
+			}
+		}
 		return ans;
 	}
 
 	static matrix calcPow(matrix mat, long long p, long long m)
 	{
 		mat = mat % m;
-		if(p == 0)
-		{
-			mat = matrix(0,0,0,0);
-			return mat;
-		}
 		if(p == 1)
 			return mat;
 
@@ -48,18 +52,22 @@ struct matrix
 
 	matrix pow(long long p, long long m) const
 	{
-		matrix ans(a,b,c,d);
-		return calcPow(ans, p, m);;
+		matrix ans(a);
+		return calcPow(ans, p, m);
 	}
 
 	static long long fibo(long long n)
 	{
-		matrix m(1,1,1,0);
+		matrix m(2,2);
+		m.a[0][0] = 1;
+		m.a[0][1] = 1;
+		m.a[1][0] = 1;
+		m.a[1][1] = 0;
 
 		if(n==1 || n==2)
 			return 1;
 
 		matrix ans = m.pow(n-2,m.MOD);
-		return (ans.a + ans.b) % m.MOD;
+		return (ans.a[0][0] + ans.a[0][1]) % m.MOD;
 	}
 };

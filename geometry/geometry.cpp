@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <vector>
 #include <cmath>
+#include <cassert>
 
 using namespace std;
 
@@ -183,6 +184,47 @@ polygon intersection(const polygon& p, double x1, double y1, double x2, double y
 	ret = cutPoly(ret, c, d);
 	ret = cutPoly(ret, d, a);
 	return ret;
+}
+
+polygon giftWrap(const vector<vector2>& points)
+{
+	int n = points.size();
+	polygon hull;
+
+	vector2 pivot = *min_element(points.begin(), points.end());
+	hull.push_back(pivot);
+
+	while(true)
+	{
+		vector2 ph = hull.back(), next = points[0];
+		for(int i=1; i < n; i++)
+		{
+			double cross = ccw(ph, next, points[i]);
+			double dist = (next - ph).norm() - (points[i] - ph).norm();
+			if(cross > 0 || (cross == 0 && dist < 0))
+				next = points[i];
+		}
+
+		if(next == pivot)
+			break;
+
+		hull.push_back(next);
+	}
+	return hull;
+}
+
+bool polygonIntersects(const polygon& p, const polygon& q)
+{
+	int n = p.size(), m = q.size();
+	if(isInside(p[0],q) || isInside(q[0], p))
+		return true;
+
+	vector2 t;
+	for(int i=0; i < n; i++)
+		for(int j=0; j < m; j++)
+			if(segmentIntersection(p[i], p[(i+1)%n], q[j], q[(j+1)%m], t))
+				return true;
+	return false;
 }
 
 int main()

@@ -67,7 +67,6 @@ int countSubstrings(const string& s)
 {
 	vector<int> a = getSuffixArray(s);
 	int ret = 0;
-	int n = s.size();
 	for(int i=0; i < a.size(); i++)
 	{
 		int cp = 0;

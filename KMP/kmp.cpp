@@ -1,11 +1,12 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
 vector<int> getPartialMatch(const string& N)
 {
 	int m = N.size();
-	vector<int< pi(m, 0);
+	vector<int> pi(m, 0);
 
 	int begin = 1, matched = 0;
 	while(begin + matched < m)

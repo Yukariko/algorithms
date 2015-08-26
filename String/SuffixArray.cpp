@@ -77,6 +77,31 @@ int countSubstrings(const string& s)
 	return ret;
 }
 
+vector<int> longestCommonPrefix(const string& s)
+{
+	vector<int> a = getSuffixArray(s);
+	vector<int> rank(a.size());
+	for(int i=0; i < a.size(); i++)
+		rank[a[i]] = i;
+
+	vector<int> ret(a.size());
+	int h = 0;
+	for(int i=0; i < s.size(); i++)
+	{
+		if(rank[i])
+		{
+			int j = a[rank[i]-1];
+			while(s[i+h] == s[j+h])
+				h++;
+			ret[rank[i]] = h;
+		}
+		if(h)
+			h--;
+	}
+
+	return ret;
+}
+
 int main()
 {
 

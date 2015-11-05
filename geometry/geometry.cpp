@@ -71,6 +71,8 @@ struct vector2
 	}
 };
 
+// 점 q가 다각형 p 안에 포함되어 있을 경우 true, 아닌경우 false
+// q가 다각형의 경계위에 있는 경우는 정의되어 있지 않음
 bool isInside(vector2 q, const vector<vector2>& p)
 {
 	int crosses = 0;
@@ -88,6 +90,7 @@ bool isInside(vector2 q, const vector<vector2>& p)
 	return crosses % 2 > 0;
 }
 
+// 주어지는 다각형의 넓이를 구함
 double area(const vector<vector2>& p)
 {
 	double ret = 0;
@@ -96,6 +99,7 @@ double area(const vector<vector2>& p)
 	return fabs(ret) / 2.0;
 }
 
+// 두 직선의 교차점을 계산
 bool lineIntersection(vector2 a, vector2 b, vector2 c, vector2 d, vector2 & x)
 {
 	double det = (b-a).cross(d-c);
@@ -105,16 +109,19 @@ bool lineIntersection(vector2 a, vector2 b, vector2 c, vector2 d, vector2 & x)
 	return true;
 }
 
+// 원점에서 벡터 b가 벡터 a의 반시계 방향이면 양수, 시계 방향이면 음수, 평행이면 0 반환
 double ccw(vector2 a, vector2 b)
 {
 	return a.cross(b);
 }
 
+// 원점 대신 점 p를 기준으로 ccw
 double ccw(vector2 p, vector2 a, vector2 b)
 {
 	return ccw(a-p,b-p);
 }
 
+// 두 평행한 선분의 교차점을 계산
 bool parallelSegments(vector2 a, vector2 b, vector2 c, vector2 d, vector2& p)
 {
 	if(b < a)
@@ -132,6 +139,8 @@ bool parallelSegments(vector2 a, vector2 b, vector2 c, vector2 d, vector2& p)
 	return true;
 }
 
+// p가 (a, b)를 감싸면서 각 변이 x,y축에 평행한 최소 사각형 내부에 있는지 확인
+// a, b, p는 일직선 상에 있다고 가정
 bool inBoundingRectangle(vector2 p, vector2 a, vector2 b)
 {
 	if(b < a)
@@ -139,6 +148,8 @@ bool inBoundingRectangle(vector2 p, vector2 a, vector2 b)
 	return p == a || p == b || (a < p && p < b);
 }
 
+// (a,b) 선분과 (c,d) 선분의 교점 x를 구함
+// 교점이 여러개일 경우 아무거나, 없을경우 false를 반환
 bool segmentIntersection(vector2 a, vector2 b, vector2 c, vector2 d, vector2& x)
 {
 	if(!lineIntersection(a,b,c,d,x))
@@ -148,6 +159,8 @@ bool segmentIntersection(vector2 a, vector2 b, vector2 c, vector2 d, vector2& x)
 
 typedef vector<vector2> polygon;
 
+// 반평면과 단순 다각형의 교집합을 구한다.
+// (a,b)를 포함하는 직선으로 다각형 p를 자른 뒤, (a, b)의 왼쪽에 있는 부분들을 반환한다.
 polygon cutPoly(const polygon& p, const vector2& a, const vector2& b)
 {
 	int n = p.size();
@@ -175,7 +188,7 @@ polygon cutPoly(const polygon& p, const vector2& a, const vector2& b)
 	return ret;
 }
 
-// Sutherland-Hodgman
+// Sutherland-Hodgman 다각형 클리핑
 polygon intersection(const polygon& p, double x1, double y1, double x2, double y2)
 {
 	vector2 a(x1,y1), b(x2,y1), c(x2,y2), d(x1,y2);
@@ -186,6 +199,7 @@ polygon intersection(const polygon& p, double x1, double y1, double x2, double y
 	return ret;
 }
 
+// points에 있는 점들을 모두 포함하는 최소의 볼록 다각형을 찾음 O(N^2)
 polygon giftWrap(const vector<vector2>& points)
 {
 	int n = points.size();
@@ -213,6 +227,7 @@ polygon giftWrap(const vector<vector2>& points)
 	return hull;
 }
 
+// 두 다각형이 서로 닿거나 겹치는지 여부를 반환
 bool polygonIntersects(const polygon& p, const polygon& q)
 {
 	int n = p.size(), m = q.size();

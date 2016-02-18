@@ -24,6 +24,13 @@ public:
 		adj.resize(V);
 	}
 
+	~NetworkFlow()
+	{
+		for(int i=0; i < V; i++)
+			for(size_t j=0; j < adj[i].size(); j++)
+				delete adj[i][j];
+	}
+
 	void addEdge(int u, int v, int capacity)
 	{
 		Edge *uv = new Edge(), *vu = new Edge();
